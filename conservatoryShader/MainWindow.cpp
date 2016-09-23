@@ -4,12 +4,12 @@
 #include <wiringPi.h>
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+	QMainWindow(parent),
+	ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
+	ui->setupUi(this);
 	wiringPiSetup();
-	
+
 	pinMode(pinRelais1, OUTPUT);
 	digitalWrite(pinRelais1, HIGH);
 	pinMode(pinRelais2, OUTPUT);
@@ -26,17 +26,24 @@ MainWindow::MainWindow(QWidget *parent) :
 	digitalWrite(pinRelais7, HIGH);
 	pinMode(pinRelais8, OUTPUT);
 	digitalWrite(pinRelais8, HIGH);
-	
+
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	bzero((char *) &serv_addr, sizeof(serv_addr));
+	bzero((char *)&serv_addr, sizeof(serv_addr));
 	portno = 13059;
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_addr.s_addr = INADDR_ANY;
 	serv_addr.sin_port = htons(portno);
+
+	struct timeval tv;
+
+	tv.tv_sec = 30;  /* 30 Secs Timeout */
+	tv.tv_usec = 0;  // Not init'ing this can cause strange errors
+
+	setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof(struct timeval));
 	if (bind(sockfd,
 		(struct sockaddr *) &serv_addr,
 		sizeof(serv_addr)) < 0) {
-			error("ERROR binding");
+		error("ERROR binding");
 	}
 	listen(sockfd, 5);
 	accepter = std::thread([this]() {
@@ -50,15 +57,8 @@ MainWindow::~MainWindow()
 	::close(sockfd);
 	accepting = false;
 	accepter.join();
-	digitalWrite(pinRelais1, HIGH);
-	digitalWrite(pinRelais2, HIGH);
-	digitalWrite(pinRelais3, HIGH);
-	digitalWrite(pinRelais4, HIGH);
-	digitalWrite(pinRelais5, HIGH);
-	digitalWrite(pinRelais6, HIGH);
-	digitalWrite(pinRelais7, HIGH);
-	digitalWrite(pinRelais8, HIGH);
-    delete ui;
+	BtnAllStopClick();
+	delete ui;
 }
 
 void MainWindow::SocketAccept()
@@ -66,19 +66,77 @@ void MainWindow::SocketAccept()
 	clilen = sizeof(cli_addr);
 	while (accepting)
 	{
-		newsockfd = accept(sockfd, 
-			(struct sockaddr *) &cli_addr, 
+		newsockfd = accept(sockfd,
+			(struct sockaddr *) &cli_addr,
 			&clilen);
-		if (newsockfd < 0) 
+		if (newsockfd < 0)
 			continue;
 		bzero(buffer, 256);
 		n = read(newsockfd, buffer, 255);
-		if (n < 0) error("ERROR reading from socket");
+		if (n < 0) {
+			printf("ERROR reading from socket\n");
+			::close(newsockfd);
+			continue;
+		}
 		printf("Here is the message: %s\n", buffer);
-		/*if (strncmp(buffer, "All"))
+		n = strcmp(buffer, "Wartenberg\r\n");
+		if (n != 0)
 		{
+			::close(newsockfd);
+			continue;
+		}
+		bzero(buffer, 256);
+		n = read(newsockfd, buffer, 255);
+		if (n < 0) {
+			printf("ERROR reading from socket\n");
+			::close(newsockfd);
+			continue;
+		}
+		if (strcmp(buffer, "All Open\r\n") == 0) {
 			BtnAllOpenClick();
-		}*/
+		}
+		else if (strcmp(buffer, "All Close\r\n") == 0) {
+			BtnAllCloseClick();
+		}
+		else if (strcmp(buffer, "All Stop\r\n") == 0) {
+			BtnAllStopClick();
+		}
+		else if (strcmp(buffer, "Close 1\r\n") == 0) {
+			BtnClose_1Click();
+		}
+		else if (strcmp(buffer, "Close 2\r\n") == 0) {
+			BtnClose_2Click();
+		}
+		else if (strcmp(buffer, "Close 3\r\n") == 0) {
+			BtnClose_3Click();
+		}
+		else if (strcmp(buffer, "Close 4\r\n") == 0) {
+			BtnClose_4Click();
+		}
+		else if (strcmp(buffer, "Open 1\r\n") == 0) {
+			BtnOpen_1Click();
+		}
+		else if (strcmp(buffer, "Open 2\r\n") == 0) {
+			BtnOpen_2Click();
+		}
+		else if (strcmp(buffer, "Open 3\r\n") == 0) {
+			BtnOpen_3Click();
+		}
+		else if (strcmp(buffer, "Open 4\r\n") == 0) {
+			BtnOpen_4Click();
+		}
+		else if (strcmp(buffer, "Stop 1\r\n") == 0) {
+			BtnEmpty_1Click();
+		}
+		else if (strcmp(buffer, "Stop 2\r\n") == 0) {
+			BtnEmpty_2Click();
+		}
+		else if (strcmp(buffer, "Stop 3\r\n") == 0) {
+			BtnEmpty_3Click();
+		}
+		else if (strcmp(buffer, "Stop 4\r\n") == 0) {
+			BtnEmpty_4Click();
+		}
 		::close(newsockfd);
 	}
 }

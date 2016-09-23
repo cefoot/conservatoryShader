@@ -23,16 +23,16 @@
       <FileMasks>
         <string>*.cpp</string>
         <string>*.h</string>
-        <string>*.pro</string>
-        <string>*.ui</string>
-        <string>*.qrc</string>
-        <string>*.qml</string>
-        <string>qmldir</string>
-        <string>*.js</string>
+        <string>*.c</string>
+        <string>*.cc</string>
+        <string>*.cxx</string>
+        <string>*.mak</string>
+        <string>Makefile</string>
+        <string>*.txt</string>
+        <string>*.cmake</string>
       </FileMasks>
       <TransferNewFilesOnly>true</TransferNewFilesOnly>
       <IncludeSubdirectories>true</IncludeSubdirectories>
-      <SelectedDirectories />
     </MainSourceTransferCommand>
     <AllowChangingHostForMainCommands>false</AllowChangingHostForMainCommands>
     <SkipBuildIfNoSourceFilesChanged>false</SkipBuildIfNoSourceFilesChanged>
@@ -41,8 +41,8 @@
     <SkipDeploymentTests>false</SkipDeploymentTests>
     <MainSourceDirectoryForLocalBuilds>$(ProjectDir)</MainSourceDirectoryForLocalBuilds>
   </Project>
-  <Build xsi:type="com.visualgdb.build.qmake">
-    <MakeFilePathRelativeToSourceDir>conservatoryShader.pro</MakeFilePathRelativeToSourceDir>
+  <Build xsi:type="com.visualgdb.build.make">
+    <MakeFilePathRelativeToSourceDir>Makefile</MakeFilePathRelativeToSourceDir>
     <MakeConfigurationName>Release</MakeConfigurationName>
     <Toolchain>
       <Name>Default GCC toolchain on 192.168.2.143</Name>
@@ -88,20 +88,6 @@
         </Records>
       </Environment>
     </MakeCommandTemplate>
-    <QMakeCommand>
-      <SkipWhenRunningCommandList>false</SkipWhenRunningCommandList>
-      <Command>qtchooser</Command>
-      <Arguments>-run-tool=qmake -qt=qt5 conservatoryShader.pro CONFIGNAME=$(ConfigurationName)</Arguments>
-      <WorkingDirectory>$(BuildDir)</WorkingDirectory>
-      <Environment>
-        <Records />
-      </Environment>
-    </QMakeCommand>
-    <UpdateSourcesInQmakeFile>true</UpdateSourcesInQmakeFile>
-    <GeneratedFilesFolder>GeneratedFiles</GeneratedFilesFolder>
-    <QtSettings>
-      <QtVersion>Qt5</QtVersion>
-    </QtSettings>
   </Build>
   <Debug xsi:type="com.visualgdb.debug.remote">
     <AdditionalStartupCommands />
@@ -173,7 +159,6 @@
     <ShowMessageAfterExecuting>true</ShowMessageAfterExecuting>
   </CustomShortcuts>
   <UserDefinedVariables />
-  <ImportedPropertySheets />
   <CodeSense>
     <Enabled>Unknown</Enabled>
     <ExtraSettings>

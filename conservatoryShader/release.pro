@@ -11,3 +11,5 @@ INCLUDEPATH +=
 QMAKE_LFLAGS += 
 QMAKE_CXXFLAGS += -ggdb 
 QMAKE_CFLAGS += -ggdb 
+LIBS	+= -lwiringPi
+LIBS	+= -lwiringPiDev
